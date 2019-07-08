@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.standard1.mapper.StandardMapper">
+    <resultMap id="standardResultMap" type="com.example.standard1.domain.Standard">
+        <result column="id" property="id" javaType="java.lang.Integer"/>
+        <result column="std_um" property="stdUm" javaType="java.lang.String"/>
+        <result column="zhname" property="zhName" javaType="java.lang.String"/>
+        <result column="version" property="version" javaType="java.lang.String"/>
+        <result column="keys" property="keys" javaType="java.lang.String"/>
+        <result column="release_date" property="releaseDate" javaType="java.time.LocalDateTime"/>
+        <result column="impl_date" property="implDate" javaType="java.time.LocalDateTime"/>
+        <result column="ackage_path" property="ackagePath" javaType="java.lang.String"/>
+    </resultMap>
+
+
+    <select id="pageCount" resultType="java.lang.Integer">
+        select count(id) from standard
+        <where>
+            <if test="standard.stdUm != null">
+                AND std_um = #{standard.stdUm}
+            </if>
+            <if test="standard.zhName != null">
+                AND zhname = #{standard.zhName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByCount" resultMap="standardResultMap">
+        select * from standard
+        <where>
+            <if test="standard.stdUm != null">
+                AND std_um = #{standard.stdUm}
+            </if>
+            <if test="standard.zhName != null">
+                AND zhname = #{standard.zhName}
+            </if>
+        </where>
+        limit ${(pagination.currentPageIndex - 1) * pagination.PAGESIZE},
+        #{pagination.PAGESIZE}
+    </select>
+
+    <delete id="delete" parameterType="java.util.Set">
+        delete from standard where id in
+        <foreach item="id" index="i" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="save" parameterType="com.example.standard1.domain.Standard">
+        insert into standard(std_um, zhname, version, `keys`, release_date, impl_date, ackage_path)
+        values(#{stdUm},#{zhName},#{version},#{keys},#{releaseDate},#{implDate},#{ackagePath});
+    </insert>
+
+
+    <update id="update" parameterType="com.example.standard1.domain.Standard">
+        update standard set
+        std_um = #{stdUm},
+        zhname = #{zhName},
+        version = #{version},
+        `keys` = #{keys},
+        release_date = #{releaseDate},
+        impl_date = #{implDate},
+        ackage_path = #{ackagePath}
+        where id = #{id}
+    </update>
+
+
+</mapper>
